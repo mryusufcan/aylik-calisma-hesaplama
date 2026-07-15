@@ -1,1 +1,0 @@
-# aylik-calisma-hesaplama
