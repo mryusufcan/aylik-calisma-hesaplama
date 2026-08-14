@@ -5,7 +5,7 @@
 
 **Aylık Çalışma Hesaplama**, vardiyalı çalışanların ve sağlık profesyonellerinin aylık toplam çalışma saatlerini kolayca hesaplayabilmesi, eksik veya fazla mesailerini hatasız bir şekilde takip edebilmesi için geliştirilmiş pratik bir araçtır.
 
-> 🌐 **Canlı Demo:** (https://mryusufcan.github.io/aylik-calisma-hesaplama)
+> 🌐 [**Canlı Demo:**] (https://mryusufcan.github.io/aylik-calisma-hesaplama)
 
 ## ✨ Özellikler
 
