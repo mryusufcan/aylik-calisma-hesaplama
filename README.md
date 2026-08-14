@@ -20,3 +20,16 @@ Projeyi yerel ortamınızda çalıştırmak veya incelemek için aşağıdaki ad
 1. Bu depoyu bilgisayarınıza klonlayın:
    ```bash
    git clone [https://github.com/mryusufcan/aylik-calisma-hesaplama.git](https://github.com/mryusufcan/aylik-calisma-hesaplama.git)
+
+🛠️ Kullanılan Teknolojiler
+Web Teknolojileri / Arayüz: HTML, CSS, JavaScript (veya projeye göre kullanılan diğer teknolojiler)
+
+🤝 Katkıda Bulunma
+Geliştirme önerileriniz veya hata bildirimleriniz için GitHub üzerinden bir Issue açabilir ya da Pull Request gönderebilirsiniz.
+
+👨‍💻 Geliştirici
+Yusuf Can Özdemir
+
+GitHub: @mryusufcan
+
+⭐️ Bu projeyi faydalı bulduysanız repoya yıldız (star) vermeyi unutmayın!
