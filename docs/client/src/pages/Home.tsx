@@ -51,6 +51,7 @@ const STORAGE_KEY = "worktime-pro-tr-preferences";
 
 type WorkStatus = "worked" | "off" | "sick";
 type WorkLog = { status: WorkStatus; hours: number };
+type EmployeeProfile = { firstName: string; lastName: string; registrationNumber: string };
 type CalendarDay = {
   day: number;
   iso: string;
@@ -63,6 +64,7 @@ type CalendarDay = {
 type Preferences = {
   dailyHours: number;
   actualDailyHours: number;
+  employeeProfile: EmployeeProfile;
   useOfficialHolidays: boolean;
   leaveDates: string[];
   workLogs: Record<string, WorkLog>;
@@ -71,6 +73,7 @@ type Preferences = {
 const DEFAULT_PREFERENCES: Preferences = {
   dailyHours: 5.83,
   actualDailyHours: 7,
+  employeeProfile: { firstName: "", lastName: "", registrationNumber: "" },
   useOfficialHolidays: true,
   leaveDates: [],
   workLogs: {},
@@ -113,7 +116,10 @@ function loadPreferences(): Preferences {
     const saved = JSON.parse(value) as Partial<Preferences>;
     const workLogs = saved.workLogs && typeof saved.workLogs === "object" ? saved.workLogs : {};
     const actualDailyHours = typeof saved.actualDailyHours === "number" ? saved.actualDailyHours : DEFAULT_PREFERENCES.actualDailyHours;
-    return { ...DEFAULT_PREFERENCES, ...saved, workLogs, actualDailyHours };
+    const employeeProfile = saved.employeeProfile && typeof saved.employeeProfile === "object"
+      ? { ...DEFAULT_PREFERENCES.employeeProfile, ...saved.employeeProfile }
+      : DEFAULT_PREFERENCES.employeeProfile;
+    return { ...DEFAULT_PREFERENCES, ...saved, workLogs, actualDailyHours, employeeProfile };
   } catch {
     return DEFAULT_PREFERENCES;
   }
@@ -199,6 +205,8 @@ export default function Home() {
   const comparisonState = Math.abs(actualStats.difference) < 0.01 ? "balanced" : actualStats.difference > 0 ? "over" : "under";
   const comparisonLabel = comparisonState === "balanced" ? "Hedefe ulaştın" : comparisonState === "over" ? "Fazla mesai" : "Eksik mesai";
   const recordedDays = calendarDays.filter((day) => day.log);
+  const fullName = `${preferences.employeeProfile.firstName} ${preferences.employeeProfile.lastName}`.trim() || "Personel bilgisi girilmedi";
+  const registrationNumber = preferences.employeeProfile.registrationNumber || "—";
   const comparisonDescription = actualStats.loggedDays === 0
     ? "Takvimden gün seçerek gerçekleşen mesaini kaydet."
     : comparisonState === "balanced"
@@ -404,6 +412,16 @@ export default function Home() {
             ) : <p className="empty-note">Hedef hesaplamasından düşmek istediğin çalışılabilir günleri ekleyebilirsin.</p>}
             <button className="text-action" onClick={resetMonthLeaves}><RotateCcw aria-hidden="true" size={14} /> Bu ayın izinlerini temizle</button>
           </section>
+
+          <section className="settings-card employee-card" aria-labelledby="employee-title">
+            <div className="section-title-row"><h2 id="employee-title">Personel bilgileri</h2><span className="thin-rule" /></div>
+            <div className="employee-fields">
+              <label><span>Ad</span><input type="text" value={preferences.employeeProfile.firstName} onChange={(event) => updatePreferences({ employeeProfile: { ...preferences.employeeProfile, firstName: event.target.value } })} placeholder="Adınız" autoComplete="given-name" /></label>
+              <label><span>Soyad</span><input type="text" value={preferences.employeeProfile.lastName} onChange={(event) => updatePreferences({ employeeProfile: { ...preferences.employeeProfile, lastName: event.target.value } })} placeholder="Soyadınız" autoComplete="family-name" /></label>
+              <label className="employee-registration"><span>Sicil numarası</span><input type="text" value={preferences.employeeProfile.registrationNumber} onChange={(event) => updatePreferences({ employeeProfile: { ...preferences.employeeProfile, registrationNumber: event.target.value } })} placeholder="Örn. 123456" inputMode="numeric" /></label>
+            </div>
+            <p className="empty-note">Bu bilgiler yalnızca cihazınızda saklanır ve PDF raporunda gösterilir.</p>
+          </section>
         </aside>
 
         <section className="workspace" aria-label="Aylık çalışma ve mesai özeti">
@@ -516,17 +534,26 @@ export default function Home() {
 
       <section className="print-report" aria-hidden="true">
         <header className="print-report-header">
-          <div>
-            <span>Çalışma Saati Hesaplayıcı</span>
-            <h1>Aylık Mesai Raporu</h1>
-            <p>{MONTHS[month]} {year} · {dayFormula}</p>
+          <div className="print-brand">
+            <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663031865770/yPeeyMQsjYHAXGtI.png" alt="" />
+            <div><span>Çalışma Saati Hesaplayıcı</span><h1>Aylık Mesai Raporu</h1><p>{MONTHS[month]} {year} · {dayFormula}</p></div>
           </div>
-          <strong>{MONTHS[month]} {year}</strong>
+          <div className="print-period"><span>RAPOR DÖNEMİ</span><strong>{MONTHS[month]} {year}</strong></div>
         </header>
+        <section className="print-identity">
+          <div><span>PERSONEL</span><strong>{fullName}</strong></div>
+          <div><span>SİCİL NUMARASI</span><strong>{registrationNumber}</strong></div>
+          <div><span>RAPOR DURUMU</span><strong className={comparisonState}>{comparisonLabel}</strong></div>
+        </section>
+        <section className={`print-status-band ${comparisonState}`}>
+          <div><span>Gerçekleşme oranı</span><strong>%{Math.round(actualProgress)}</strong></div>
+          <div className="print-progress"><span style={{ width: `${actualProgress}%` }} /></div>
+          <p>{comparisonDescription}</p>
+        </section>
         <div className="print-summary-grid">
-          <article><span>Hedef süre</span><strong>{targetHours} sa</strong><small>{targetStats.workDays} gün × {targetDailyHours} sa</small></article>
-          <article><span>Gerçekleşen süre</span><strong>{actualHours} sa</strong><small>{actualStats.workedDays} çalışılan gün</small></article>
-          <article><span>{comparisonLabel}</span><strong>{comparisonState === "balanced" ? "0" : differenceHours} sa</strong><small>{actualStats.loggedDays} günlük kayıt</small></article>
+          <article className="target"><span>Hedef süre</span><strong>{targetHours} <small>sa</small></strong><em>{targetStats.workDays} gün × {targetDailyHours} sa</em></article>
+          <article className="actual"><span>Gerçekleşen süre</span><strong>{actualHours} <small>sa</small></strong><em>{actualStats.workedDays} çalışılan gün</em></article>
+          <article className={comparisonState}><span>{comparisonLabel}</span><strong>{comparisonState === "balanced" ? "0" : differenceHours} <small>sa</small></strong><em>{actualStats.loggedDays} günlük kayıt</em></article>
         </div>
         <div className="print-details">
           <span>Hedef katsayısı: <b>{targetDailyHours} sa</b></span>
@@ -544,6 +571,10 @@ export default function Home() {
             )) : <tr><td colSpan={3}>Bu dönem için günlük mesai kaydı bulunmuyor.</td></tr>}
           </tbody>
         </table>
+        <section className="signature-section">
+          <div><span>Yönetici onayı</span><i /><strong>Ad Soyad / İmza / Kaşe</strong></div>
+          <div><span>Personel imzası</span><i /><strong>{fullName === "Personel bilgisi girilmedi" ? "Ad Soyad / İmza" : fullName}</strong></div>
+        </section>
         <footer>Bu rapor tarayıcıdan oluşturulmuştur. Rapor tarihi: {new Intl.DateTimeFormat("tr-TR", { dateStyle: "long" }).format(new Date())}</footer>
       </section>
 
