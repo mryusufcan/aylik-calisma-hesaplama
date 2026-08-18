@@ -10,10 +10,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
-  Download,
   Info,
   Moon,
   Plus,
+  Printer,
   RotateCcw,
   Sun,
   Trash2,
@@ -198,6 +198,7 @@ export default function Home() {
   const dayFormula = `${targetStats.totalDays} gün − ${targetStats.sundays} pazar − ${targetStats.official} resmî tatil${targetStats.leave ? ` − ${targetStats.leave} ek izin` : ""} = ${targetStats.workDays} çalışma günü`;
   const comparisonState = Math.abs(actualStats.difference) < 0.01 ? "balanced" : actualStats.difference > 0 ? "over" : "under";
   const comparisonLabel = comparisonState === "balanced" ? "Hedefe ulaştın" : comparisonState === "over" ? "Fazla mesai" : "Eksik mesai";
+  const recordedDays = calendarDays.filter((day) => day.log);
   const comparisonDescription = actualStats.loggedDays === 0
     ? "Takvimden gün seçerek gerçekleşen mesaini kaydet."
     : comparisonState === "balanced"
@@ -306,35 +307,9 @@ export default function Home() {
     localStorage.setItem("worktime-pro-tr-theme", nextTheme ? "dark" : "light");
   };
 
-  const exportCsv = () => {
-    const recordedRows = calendarDays
-      .filter((day) => day.log)
-      .map((day) => [formatDate(day.iso), WORK_STATUS[day.log!.status].label, day.log!.status === "worked" ? formatDecimal(day.log!.hours) : "0"]);
-    const rows = [
-      ["Dönem", `${MONTHS[month]} ${year}`],
-      ["Günlük hedef katsayısı", `${targetDailyHours} saat`],
-      ["Günlük gerçekleşen saat varsayılanı", `${actualDailyHours} saat`],
-      ["Hedef hesaplama", dayFormula],
-      ["Hedef saat", targetHours],
-      ["Gerçekleşen saat", actualHours],
-      ["Mesai farkı", formatDecimal(actualStats.difference)],
-      ["Kayıtlı çalışma günü", actualStats.workedDays],
-      ["Pazar", targetStats.sundays],
-      ["Resmî tatil", targetStats.official],
-      ["Ek izin", targetStats.leave],
-      [],
-      ["Günlük gerçekleşen kayıtlar", "Durum", "Saat"],
-      ...recordedRows,
-    ];
-    const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(";")).join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `calisma-saati-${year}-${String(month + 1).padStart(2, "0")}.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    toast.success("Mesai özeti CSV olarak indirildi.");
+  const printReport = () => {
+    toast.message("Yazdırma penceresinde “PDF olarak kaydet” seçeneğini kullanabilirsiniz.");
+    window.setTimeout(() => window.print(), 120);
   };
 
   const todayIso = toIsoDate(today.getFullYear(), today.getMonth(), today.getDate());
@@ -524,7 +499,7 @@ export default function Home() {
                     <span><i className="legend-leave" /> İzin <b>{targetStats.leave}</b></span>
                   </div>
                 </div>
-                <Button variant="outline" className="export-button" onClick={exportCsv}><Download aria-hidden="true" size={16} /> Mesai özetini CSV indir</Button>
+                <Button variant="outline" className="export-button" onClick={printReport}><Printer aria-hidden="true" size={16} /> PDF raporunu yazdır</Button>
               </article>
 
               <article className="privacy-card">
@@ -538,6 +513,39 @@ export default function Home() {
         </section>
       </main>
       <footer className="app-footer"><span>Çalışma Saati Hesaplayıcı</span><span>Aylık hedef ve gerçekleşen mesaini karşılaştırır.</span></footer>
+
+      <section className="print-report" aria-hidden="true">
+        <header className="print-report-header">
+          <div>
+            <span>Çalışma Saati Hesaplayıcı</span>
+            <h1>Aylık Mesai Raporu</h1>
+            <p>{MONTHS[month]} {year} · {dayFormula}</p>
+          </div>
+          <strong>{MONTHS[month]} {year}</strong>
+        </header>
+        <div className="print-summary-grid">
+          <article><span>Hedef süre</span><strong>{targetHours} sa</strong><small>{targetStats.workDays} gün × {targetDailyHours} sa</small></article>
+          <article><span>Gerçekleşen süre</span><strong>{actualHours} sa</strong><small>{actualStats.workedDays} çalışılan gün</small></article>
+          <article><span>{comparisonLabel}</span><strong>{comparisonState === "balanced" ? "0" : differenceHours} sa</strong><small>{actualStats.loggedDays} günlük kayıt</small></article>
+        </div>
+        <div className="print-details">
+          <span>Hedef katsayısı: <b>{targetDailyHours} sa</b></span>
+          <span>Gerçekleşen varsayılan: <b>{actualDailyHours} sa</b></span>
+          <span>Pazar: <b>{targetStats.sundays}</b></span>
+          <span>Resmî tatil: <b>{targetStats.official}</b></span>
+          <span>Ek izin: <b>{targetStats.leave}</b></span>
+        </div>
+        <h2>Günlük gerçekleşen kayıtlar</h2>
+        <table>
+          <thead><tr><th>Tarih</th><th>Durum</th><th>Saat</th></tr></thead>
+          <tbody>
+            {recordedDays.length ? recordedDays.map((day) => (
+              <tr key={`print-${day.iso}`}><td>{formatDate(day.iso)}</td><td>{WORK_STATUS[day.log!.status].label}</td><td>{day.log!.status === "worked" ? `${formatDecimal(day.log!.hours)} sa` : "—"}</td></tr>
+            )) : <tr><td colSpan={3}>Bu dönem için günlük mesai kaydı bulunmuyor.</td></tr>}
+          </tbody>
+        </table>
+        <footer>Bu rapor tarayıcıdan oluşturulmuştur. Rapor tarihi: {new Intl.DateTimeFormat("tr-TR", { dateStyle: "long" }).format(new Date())}</footer>
+      </section>
 
       <Dialog open={Boolean(selectedDay)} onOpenChange={(open) => { if (!open) setSelectedDay(null); }}>
         <DialogContent className="work-log-dialog">
