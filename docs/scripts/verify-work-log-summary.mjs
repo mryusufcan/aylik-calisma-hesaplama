@@ -10,6 +10,9 @@ function calculateActual(targetHours, logs) {
 const targetHours = 26 * 5.83;
 assert.equal(targetHours.toFixed(2), "151.58", "Ağustos 2026 hedefi 151,58 saat olmalı");
 
+const actualDailyHoursDefault = 7;
+assert.equal(actualDailyHoursDefault, 7, "Çalıştım kaydının varsayılan gerçekleşen süresi 7 saat olmalı");
+
 const partialMonth = calculateActual(targetHours, {
   "2026-08-03": { status: "worked", hours: 8 },
   "2026-08-04": { status: "worked", hours: 7.5 },

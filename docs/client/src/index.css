@@ -132,7 +132,7 @@
 .field-grid { display: grid; gap: 12px; }
 .field-grid-period { grid-template-columns: 0.85fr 1.15fr; }
 .field-grid label, .full-field { display: grid; gap: 7px; color: var(--ink-soft); font-size: 0.72rem; font-weight: 700; }
-.full-field { margin-top: 14px; }
+.full-field { margin-top: 14px; }.field-note { color: var(--ink-soft); font-size: .66rem; font-weight: 500; line-height: 1.35; }
 input[type="number"], select, input[type="date"] { width: 100%; min-height: 42px; background: var(--card); color: var(--foreground); border: 1px solid var(--border); border-radius: 8px; padding: 0 10px; font-size: 0.84rem; transition: border-color 160ms ease, box-shadow 160ms ease; }
 input[type="number"]:hover, select:hover, input[type="date"]:hover { border-color: color-mix(in srgb, var(--indigo) 42%, var(--border)); }
 .unit-input { display: grid; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); transition: border-color 160ms ease, box-shadow 160ms ease; }

@@ -62,6 +62,7 @@ type CalendarDay = {
 
 type Preferences = {
   dailyHours: number;
+  actualDailyHours: number;
   useOfficialHolidays: boolean;
   leaveDates: string[];
   workLogs: Record<string, WorkLog>;
@@ -69,6 +70,7 @@ type Preferences = {
 
 const DEFAULT_PREFERENCES: Preferences = {
   dailyHours: 5.83,
+  actualDailyHours: 7,
   useOfficialHolidays: true,
   leaveDates: [],
   workLogs: {},
@@ -110,7 +112,8 @@ function loadPreferences(): Preferences {
     if (!value) return DEFAULT_PREFERENCES;
     const saved = JSON.parse(value) as Partial<Preferences>;
     const workLogs = saved.workLogs && typeof saved.workLogs === "object" ? saved.workLogs : {};
-    return { ...DEFAULT_PREFERENCES, ...saved, workLogs };
+    const actualDailyHours = typeof saved.actualDailyHours === "number" ? saved.actualDailyHours : DEFAULT_PREFERENCES.actualDailyHours;
+    return { ...DEFAULT_PREFERENCES, ...saved, workLogs, actualDailyHours };
   } catch {
     return DEFAULT_PREFERENCES;
   }
@@ -125,7 +128,7 @@ export default function Home() {
   const [isDark, setIsDark] = useState(false);
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const [entryStatus, setEntryStatus] = useState<WorkStatus>("worked");
-  const [entryHours, setEntryHours] = useState(String(DEFAULT_PREFERENCES.dailyHours));
+  const [entryHours, setEntryHours] = useState(String(DEFAULT_PREFERENCES.actualDailyHours));
 
   useEffect(() => {
     setPreferences(loadPreferences());
@@ -187,7 +190,8 @@ export default function Home() {
 
   const selectedMonthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
   const selectedMonthLeaveDates = preferences.leaveDates.filter((date) => date.startsWith(selectedMonthPrefix));
-  const hoursPerDay = formatDecimal(preferences.dailyHours);
+  const targetDailyHours = formatDecimal(preferences.dailyHours);
+  const actualDailyHours = formatDecimal(preferences.actualDailyHours);
   const targetHours = formatDecimal(targetStats.totalHours);
   const actualHours = formatDecimal(actualStats.totalHours);
   const differenceHours = formatDecimal(Math.abs(actualStats.difference));
@@ -254,7 +258,7 @@ export default function Home() {
   const openWorkLog = (day: CalendarDay) => {
     setSelectedDay(day);
     setEntryStatus(day.log?.status ?? "worked");
-    setEntryHours(String(day.log?.hours ?? preferences.dailyHours));
+    setEntryHours(String(day.log?.hours ?? preferences.actualDailyHours));
   };
 
   const saveWorkLog = () => {
@@ -308,7 +312,8 @@ export default function Home() {
       .map((day) => [formatDate(day.iso), WORK_STATUS[day.log!.status].label, day.log!.status === "worked" ? formatDecimal(day.log!.hours) : "0"]);
     const rows = [
       ["Dönem", `${MONTHS[month]} ${year}`],
-      ["Günlük hedef süre", `${hoursPerDay} saat`],
+      ["Günlük hedef katsayısı", `${targetDailyHours} saat`],
+      ["Günlük gerçekleşen saat varsayılanı", `${actualDailyHours} saat`],
       ["Hedef hesaplama", dayFormula],
       ["Hedef saat", targetHours],
       ["Gerçekleşen saat", actualHours],
@@ -381,11 +386,19 @@ export default function Home() {
               </label>
             </div>
             <label className="full-field">
-              <span>Günlük hedef saat</span>
+              <span>Günlük hedef katsayısı</span>
               <div className="unit-input">
                 <input type="number" min="0.25" max="24" step="0.01" value={preferences.dailyHours} onChange={(event) => updatePreferences({ dailyHours: Math.max(0.25, Math.min(24, Number(event.target.value) || 0.25)) })} />
                 <span>sa</span>
               </div>
+            </label>
+            <label className="full-field">
+              <span>Günlük gerçekleşen saat</span>
+              <div className="unit-input">
+                <input type="number" min="0.25" max="24" step="0.25" value={preferences.actualDailyHours} onChange={(event) => updatePreferences({ actualDailyHours: Math.max(0.25, Math.min(24, Number(event.target.value) || 0.25)) })} />
+                <span>sa</span>
+              </div>
+              <small className="field-note">“Çalıştım” kaydında otomatik önerilen süre.</small>
             </label>
             <label className="switch-row">
               <input type="checkbox" checked={preferences.useOfficialHolidays} onChange={(event) => updatePreferences({ useOfficialHolidays: event.target.checked })} />
@@ -426,12 +439,12 @@ export default function Home() {
               <span className="eyebrow status-eyebrow"><span className="status-dot balanced" /> Aylık hedef</span>
               <h2 id="status-heading">Planlanan çalışma süresi</h2>
               <p>{dayFormula}</p>
-              <div className="progress-meta"><span>Hedef gün <strong>{targetStats.workDays}</strong></span><span>Günlük süre <strong>{hoursPerDay} sa</strong></span></div>
+              <div className="progress-meta"><span>Hedef gün <strong>{targetStats.workDays}</strong></span><span>Hedef katsayı <strong>{targetDailyHours} sa</strong></span></div>
             </div>
             <div className="calculation-result" aria-label={`Toplam hedef süre ${targetHours} saat`}>
               <strong>{targetHours}</strong>
               <span>hedef saat</span>
-              <small>{targetStats.workDays} gün × {hoursPerDay} sa</small>
+              <small>{targetStats.workDays} gün × {targetDailyHours} sa</small>
             </div>
           </section>
 
@@ -444,7 +457,7 @@ export default function Home() {
             </div>
             <div className="comparison-data">
               <div className="comparison-stat"><span>Hedef</span><strong>{targetHours}<small>sa</small></strong><em>{targetStats.workDays} hedef gün</em></div>
-              <div className="comparison-stat actual"><span>Gerçekleşen</span><strong>{actualHours}<small>sa</small></strong><em>{actualStats.workedDays} çalışılan gün</em></div>
+              <div className="comparison-stat actual"><span>Gerçekleşen</span><strong>{actualHours}<small>sa</small></strong><em>{actualStats.workedDays} gün · varsayılan {actualDailyHours} sa</em></div>
               <div className={`comparison-stat difference ${comparisonState}`}><span>{comparisonLabel}</span><strong>{comparisonState === "balanced" ? "0" : differenceHours}<small>sa</small></strong><em>{actualStats.loggedDays} günlük kayıt</em></div>
             </div>
             <div className="comparison-progress" aria-label={`Hedefin yüzde ${Math.round(actualProgress)} kadarı gerçekleşti`}><span style={{ width: `${actualProgress}%` }} /></div>
