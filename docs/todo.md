@@ -8,3 +8,7 @@
 
 - [x] Ürün adını Çalışma Saati Hesaplayıcı olarak güncelle.
 - [x] Masaüstü ve mobil başlık görünümünü doğrula.
+
+- [x] GitHub Pages için Vite temel yolunu ve Actions dağıtım iş akışını yapılandır.
+- [ ] Güncel kodu mevcut GitHub deposuna aktar.
+- [ ] GitHub Pages yayın akışını ve canlı bağlantıyı doğrula.

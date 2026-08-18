@@ -230,7 +230,7 @@ export default function Home() {
     <div className="dashboard-shell">
       <header className="topbar">
         <a className="brand-lockup" href="#main-content" aria-label="Çalışma Saati Hesaplayıcı ana içeriğe geç">
-          <img src="/manus-storage/worktime-logo_cddc1dd8.png" alt="" className="brand-mark" />
+          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663031865770/yPeeyMQsjYHAXGtI.png" alt="" className="brand-mark" />
           <span>
             <strong>Çalışma Saati Hesaplayıcı</strong>
             <small>Türkiye için aylık hesaplama</small>
@@ -309,7 +309,7 @@ export default function Home() {
 
         <section className="workspace" aria-label="Aylık çalışma planı">
           <section className="status-banner" aria-labelledby="status-heading">
-            <img className="status-visual" src="/manus-storage/worktime-header-schedule_42beecbb.png" alt="" />
+            <img className="status-visual" src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663031865770/wCJodkjVHWwywucd.png" alt="" />
             <div className="time-ruler" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div>
             <div className="status-copy">
               <span className="eyebrow status-eyebrow"><span className="status-dot balanced" /> Hesaplama sonucu</span>
@@ -384,7 +384,7 @@ export default function Home() {
 
               <article className="privacy-card">
                 <div><span className="eyebrow"><Check aria-hidden="true" size={14} /> Yerelde saklanır</span><h2>Planın yalnızca bu cihazda kalır.</h2><p>Girdiğin ayarlar ve ek izinler tarayıcının yerel hafızasında saklanır.</p></div>
-                <img src="/manus-storage/worktime-privacy-cards_8ab73ff7.png" alt="Takvim kartları ile yerel veri saklamayı anlatan soyut görsel" />
+                <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663031865770/mDHRGODkMNZgaLkb.png" alt="Takvim kartları ile yerel veri saklamayı anlatan soyut görsel" />
               </article>
             </aside>
           </section>

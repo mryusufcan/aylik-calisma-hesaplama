@@ -1,35 +1,34 @@
-# 🗓️ Aylık Çalışma Hesaplama
+# Çalışma Saati Hesaplayıcı
 
-![Lisans](https://img.shields.io/badge/Lisans-MIT-blue.svg)
-![Durum](https://img.shields.io/badge/Durum-Aktif-success.svg)
+Türkiye’de vardiyalı çalışanlar için aylık çalışma saatini hesaplayan, tarayıcıda çalışan hafif bir araçtır.
 
-**Aylık Çalışma Hesaplama**, vardiyalı çalışanların ve sağlık profesyonellerinin aylık toplam çalışma saatlerini kolayca hesaplayabilmesi, eksik veya fazla mesailerini hatasız bir şekilde takip edebilmesi için geliştirilmiş pratik bir araçtır.
+> Hesaplama formülü: **toplam gün − Pazar − resmî tatil − ek izin = çalışma günü**. Sonuç, çalışma günü sayısının günlük çalışma saatiyle çarpılmasıyla elde edilir.
 
-> 🌐 **Canlı Demo:** https://mryusufcan.github.io/aylik-calisma-hesaplama
+## Özellikler
 
-## ✨ Özellikler
+| Alan | Açıklama |
+|---|---|
+| Aylık hesaplama | Seçilen ayın toplam gününden Pazar, resmî tatil ve ek izinleri çıkarır. |
+| Günlük süre | Varsayılan **5,83 saat** değeri kullanıcı tarafından değiştirilebilir. |
+| Takvim görünümü | Çalışma, Pazar, resmî tatil ve ek izin günlerini ayrı renklerle gösterir. |
+| Yerel saklama | Ayarlar ve ek izinler yalnızca kullanıcının tarayıcısında saklanır. |
+| CSV dışa aktarma | Aylık özeti CSV dosyası olarak indirir. |
 
-*   **Hızlı ve Kolay Veri Girişi:** Günlük çalışma saatlerini veya nöbet çizelgelerini pratik bir şekilde sisteme girme imkanı.
-*   **Otomatik Mesai Hesaplama:** Aylık hedeflenen zorunlu çalışma saatine göre kalan eksik veya fazla mesai (overtime) süresini anında görüntüleme.
-*   **Kullanıcı Dostu Arayüz:** Modern, sade ve göz yormayan arayüz tasarımı.
+## Yerel geliştirme
 
-## 🚀 Kurulum ve Kullanım
+```bash
+pnpm install
+pnpm dev
+```
 
-Projeyi yerel ortamınızda çalıştırmak veya incelemek için aşağıdaki adımları takip edebilirsiniz:
+## GitHub Pages dağıtımı
 
-1. Bu depoyu bilgisayarınıza klonlayın:
-   ```bash
-   git clone [https://github.com/mryusufcan/aylik-calisma-hesaplama.git](https://github.com/mryusufcan/aylik-calisma-hesaplama.git)
+`main` dalına yapılan her gönderim, `.github/workflows/deploy-pages.yml` iş akışını başlatır. GitHub deposunda **Settings → Pages → Build and deployment → Source** seçeneğini **GitHub Actions** olarak ayarlayın. İş akışı tamamlandıktan sonra uygulama şu adreste yayınlanır:
 
-🛠️ Kullanılan Teknolojiler
-Web Teknolojileri / Arayüz: HTML, CSS, JavaScript (veya projeye göre kullanılan diğer teknolojiler)
+`https://mryusufcan.github.io/aylik-calisma-hesaplama/`
 
-🤝 Katkıda Bulunma
-Geliştirme önerileriniz veya hata bildirimleriniz için GitHub üzerinden bir Issue açabilir ya da Pull Request gönderebilirsiniz.
+GitHub Pages için yerel üretimi doğrulamak isterseniz:
 
-👨‍💻 Geliştirici
-Yusuf Can Özdemir
-
-GitHub: @mryusufcan
-
-⭐️ Bu projeyi faydalı bulduysanız repoya yıldız (star) vermeyi unutmayın!
+```bash
+pnpm build:pages
+```

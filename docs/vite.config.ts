@@ -207,6 +207,8 @@ const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(
 
 export default defineConfig({
   plugins,
+  // GitHub Pages uygulamayı depo adının altındaki URL’den sunar.
+  base: process.env.GITHUB_PAGES === "true" ? "/aylik-calisma-hesaplama/" : "/",
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
