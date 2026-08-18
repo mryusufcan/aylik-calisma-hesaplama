@@ -10,5 +10,5 @@
 - [x] Masaüstü ve mobil başlık görünümünü doğrula.
 
 - [x] GitHub Pages için Vite temel yolunu ve mevcut `docs` yayın modelini yapılandır.
-- [ ] Güncel kodu mevcut GitHub deposuna aktar.
-- [ ] GitHub Pages yayın akışını ve canlı bağlantıyı doğrula.
+- [x] Güncel kodu mevcut GitHub deposuna aktar.
+- [x] GitHub Pages yayın akışını ve canlı bağlantıyı doğrula.
