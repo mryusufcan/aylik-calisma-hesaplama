@@ -23,12 +23,16 @@ pnpm dev
 
 ## GitHub Pages dağıtımı
 
-`main` dalına yapılan her gönderim, `.github/workflows/deploy-pages.yml` iş akışını başlatır. GitHub deposunda **Settings → Pages → Build and deployment → Source** seçeneğini **GitHub Actions** olarak ayarlayın. İş akışı tamamlandıktan sonra uygulama şu adreste yayınlanır:
+Bu depo, GitHub Pages’in mevcut **`main` dalı / `docs` klasörü** yayın modelini kullanır. GitHub Pages için üretim yapıldığında statik çıktı `docs/` köküne alınır; böylece sunucu veya ek yapılandırma gerektirmeden şu adreste yayınlanır:
 
 `https://mryusufcan.github.io/aylik-calisma-hesaplama/`
 
-GitHub Pages için yerel üretimi doğrulamak isterseniz:
+Yayın çıktısını yerelde yeniden üretmek isterseniz:
 
 ```bash
-pnpm build:pages
+cd docs
+pnpm install
+GITHUB_PAGES=true pnpm build:pages
+cp -R dist/public/. .
+rm -rf dist
 ```
